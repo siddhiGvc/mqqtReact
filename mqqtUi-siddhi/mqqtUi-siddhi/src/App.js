@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
+import TablePagination from '@mui/material/TablePagination';
 import axios from 'axios';
 import { useState } from 'react';
 
@@ -45,19 +46,30 @@ const rows = [
 
 export default function CustomizedTables() {
   const [data,setData]=useState([])
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
    React.useEffect(()=>{
 
-    // fetch('http://localhost:8080/transactions')
-    // .then((res)=>{
-    //   return res.json();
-    // })
-    // .then((json)=>{
-    //   console.log(json);
-    //   setData(json);
+    fetch('http://localhost:8080/transactions')
+    .then((res)=>{
+      return res.json();
+    })
+    .then((json)=>{
+      console.log(json);
+      setData(json);
       
       
-    // })
+    })
        
       
 
@@ -66,7 +78,7 @@ export default function CustomizedTables() {
   
 
   return <>
-  <div styles={{width:'100%',padding:"30px",paddingTop:"40px"}}>
+  <div styles={{width:'80%',padding:"30px",paddingTop:"40px",margin:"auto"}}>
   <div style={{marginTop:"50px",marginBottom:"30px"}}>
   <TextField
           required
@@ -93,32 +105,43 @@ export default function CustomizedTables() {
           autoComplete="To"
         />
   </div>
-    <TableContainer component={Paper} style={{widht:"80%"}}>
-      <Table sx={{ minWidth: 600 }} aria-label="customized table">
+  <Paper  sx={{ width: '100%', overflow: 'hidden' }}>
+    <TableContainer component={Paper} style={{widht:"50%",margin:"auto"}}>
+      <Table sx={{maxWidth:700,margin:"auto"}}  stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Dessert (100g serving)</StyledTableCell>
-            <StyledTableCell align="right">Calories</StyledTableCell>
-            <StyledTableCell align="right">Fat&nbsp;(g)</StyledTableCell>
-            <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
-            <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
+            <StyledTableCell>Id</StyledTableCell>
+            <StyledTableCell align="left">Machine</StyledTableCell>
+            <StyledTableCell align="left">Command</StyledTableCell>
+            <StyledTableCell align="left">P1</StyledTableCell>
+        
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {data.map((row,i) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row">
-                {row.name}
+                {i+1}
               </StyledTableCell>
-              <StyledTableCell align="right">{row.calories}</StyledTableCell>
-              <StyledTableCell align="right">{row.fat}</StyledTableCell>
-              <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-              <StyledTableCell align="right">{row.protein}</StyledTableCell>
+              <StyledTableCell align="left">{row.machine}</StyledTableCell>
+              <StyledTableCell align="left">{row.command}</StyledTableCell>
+              <StyledTableCell align="left">{row.p1}</StyledTableCell>
+            
             </StyledTableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
+    <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+      </Paper>
     </div>
     </>
 }
