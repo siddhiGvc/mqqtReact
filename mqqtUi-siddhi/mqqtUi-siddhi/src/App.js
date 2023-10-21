@@ -11,6 +11,11 @@ import TextField from '@mui/material/TextField';
 import TablePagination from '@mui/material/TablePagination';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
+import LoadingButton from '@mui/lab/LoadingButton';
+import SendIcon from '@mui/icons-material/Send';
+import { getLoadingButtonUtilityClass, loadingButtonClasses } from '@mui/lab/LoadingButton';
+
+
 import axios from 'axios';
 import { useState } from 'react';
 
@@ -54,6 +59,11 @@ export default function CustomizedTables() {
   const [endDate,setEndDate]=React.useState();
   const [from,setFrom]=React.useState("");
   const [to,setTo]=React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  function handleClick() {
+    setLoading(true);
+    OnSubmit();
+  }
 
   function formatStartDate(date) {
     setStartDate(date);
@@ -91,7 +101,7 @@ export default function CustomizedTables() {
     .then((json)=>{
       console.log(json);
       setData(json);
-      
+      setLoading(false);
       
     })
   }
@@ -104,6 +114,7 @@ export default function CustomizedTables() {
     .then((json)=>{
       console.log(json);
       setData(json);
+      setLoading(false);
       
       
     })
@@ -118,7 +129,7 @@ export default function CustomizedTables() {
     .then((json)=>{
       console.log(json);
       setData(json);
-      
+      setLoading(false);
       
     })
  
@@ -132,7 +143,7 @@ export default function CustomizedTables() {
     .then((json)=>{
       console.log(json);
       setData(json);
-      
+      setLoading(false);
       
     })
  
@@ -148,9 +159,11 @@ export default function CustomizedTables() {
   
 
   return <>
-  <div styles={{width:'80%',padding:"30px",paddingTop:"40px",margin:"auto"}}>
-  <div style={{marginTop:"50px",marginBottom:"30px"}}>
-  <FormControl style={{display:'flex',flexDirection:"row",justifyContent:'space-evenly'}} >
+  <div style={{width:'90%',padding:"30px",paddingTop:"40px",margin:"auto"}}>
+    <h1 style={{textAlign:"center"}}>Transactions Details</h1>
+    <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px"}}>
+  <div style={{width:"90%",marginTop:"50px",marginBottom:"30px"}}>
+  <FormControl style={{display:'flex',flexDirection:"row",justifyContent:"space-between"}} >
     
   <TextField
           type='date'
@@ -160,7 +173,7 @@ export default function CustomizedTables() {
           InputLabelProps={{
             shrink: true,
           }}
-          
+          style={{color:"blue"}}
           onChange={(e)=>formatStartDate(e.target.value)}
         />
         <TextField
@@ -188,14 +201,24 @@ export default function CustomizedTables() {
           autoComplete="To"
           onChange={(e)=>setTo(e.target.value)}
         />
-         <Button type="submit" onClick={OnSubmit} variant="contained">Search</Button>
+           <LoadingButton
+          size="small"
+          onClick={handleClick}
+       
+          loading={loading}
+          loadingPosition="end"
+          variant="contained"
+        >
+          <span>Search</span>
+        </LoadingButton>
          
          </FormControl>
         
   </div>
-  <Paper  sx={{ width: '100%', overflow: 'hidden' }}>
+  </Paper>
+  <Paper elevation={20}  sx={{ width: '70%', overflow: 'hidden',margin:"auto",padding:"20px" }}>
     <TableContainer component={Paper} style={{widht:"50%",margin:"auto"}}>
-      <Table sx={{maxWidth:700,margin:"auto"}}  stickyHeader aria-label="sticky table">
+      <Table sx={{maxWidth:900,margin:"auto"}}  stickyHeader aria-label="sticky table">
         <TableHead>
           <TableRow>
             <StyledTableCell>Id</StyledTableCell>
@@ -222,15 +245,7 @@ export default function CustomizedTables() {
         </TableBody>
       </Table>
     </TableContainer>
-    <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+   
       </Paper>
     </div>
     </>
