@@ -1,4 +1,5 @@
 import * as React from 'react';
+import "./App.css"
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,6 +15,7 @@ import FormControl from '@mui/material/FormControl';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import { getLoadingButtonUtilityClass, loadingButtonClasses } from '@mui/lab/LoadingButton';
+import noData from "./assets/download.png"
 
 
 import axios from 'axios';
@@ -21,17 +23,19 @@ import { useState } from 'react';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
+    backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
+    fontSize:"17px"
   },
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 15,
+    
   },
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: theme.palette.common.pink,
   },
   // hide last border
   '&:last-child td, &:last-child th': {
@@ -55,8 +59,8 @@ export default function CustomizedTables() {
   const [data,setData]=useState([])
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [startDate,setStartDate]=React.useState();
-  const [endDate,setEndDate]=React.useState();
+  const [startDate,setStartDate]=React.useState("2023-10-27");
+  const [endDate,setEndDate]=React.useState(new Date());
   const [from,setFrom]=React.useState("");
   const [to,setTo]=React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -65,21 +69,45 @@ export default function CustomizedTables() {
     OnSubmit();
   }
 
-  function formatStartDate(date) {
-    setStartDate(date);
-    // const year =date.getFullYear().toString().slice(-2); // Get the last two digits of the year
-    // const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2-digit month
-    // const day = String(date.getDate()).padStart(2, '0'); // Ensure 2-digit day
-    // setStartDate(`${year}/${month}/${day}`);
+  function getCurrentDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  function getPreviousDate() {
+    const today = new Date();
+    today.setDate(today.getDate() - 1); // Subtract 1 day from the current date
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function convertDate(d){
+    const isoDateString = d;
+const isoDate = new Date(isoDateString);
+
+const year = isoDate.getFullYear();
+const month = String(isoDate.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+const day = String(isoDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function convertTime(d) {
+    const isoDateString = d;
+    const isoDate = new Date(isoDateString);
+
+    const hours = String(isoDate.getUTCHours()).padStart(2, '0');
+const minutes = String(isoDate.getUTCMinutes()).padStart(2, '0');
+const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
+
+   return `${hours}:${minutes}:${seconds}`;
+
+    
   }
   
-  function formatEndDate(date) {
-    setEndDate(date);
-    // const year =date.getFullYear().toString().slice(-2); // Get the last two digits of the year
-    // const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure 2-digit month
-    // const day = String(date.getDate()).padStart(2, '0'); // Ensure 2-digit day
-    // setEndDate(`${year}/${month}/${day}`);
-  }
 
 
   const handleChangePage = (event, newPage) => {
@@ -90,6 +118,20 @@ export default function CustomizedTables() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  React.useEffect(()=>{
+    fetch(`http://localhost:8080/transactions?start_date=${startDate}&end_date=${endDate}`)
+    .then((res)=>{
+      return res.json();
+    })
+    .then((json)=>{
+      console.log(json);
+      setData(json);
+      setLoading(false);
+      
+    })
+
+  },[])
 
    const OnSubmit=()=>{
     if(!from && !to)
@@ -117,6 +159,10 @@ export default function CustomizedTables() {
       setLoading(false);
       
       
+    })
+    .catch((err)=>{
+      setData([]);
+
     })
  
   }
@@ -159,9 +205,9 @@ export default function CustomizedTables() {
   
 
   return <>
-  <div style={{width:'90%',padding:"30px",paddingTop:"40px",margin:"auto"}}>
-    <h1 style={{textAlign:"center"}}>Transactions Details</h1>
-    <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px"}}>
+  <div style={{width:'100%',paddingTop:"5px",margin:"auto",paddingBottom:"290px"}} class="BackgroundHeader">
+    <p style={{textAlign:"center",color:"white",fontSize:"45px"}}>MQTT Details</p>
+    <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px",borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}}>
   <div style={{width:"90%",marginTop:"50px",marginBottom:"30px"}}>
   <FormControl style={{display:'flex',flexDirection:"row",justifyContent:"space-between"}} >
     
@@ -172,9 +218,11 @@ export default function CustomizedTables() {
           label="Start Date "
           InputLabelProps={{
             shrink: true,
+            style: { color: 'blue' },
           }}
+          defaultValue={getPreviousDate()}
           style={{color:"blue"}}
-          onChange={(e)=>formatStartDate(e.target.value)}
+          onChange={(e)=>setStartDate(e.target.value)}
         />
         <TextField
           type="date"
@@ -183,26 +231,38 @@ export default function CustomizedTables() {
           label="End Date "
           InputLabelProps={{
             shrink: true,
+            style: { color: 'blue' },
           }}
-          
-          onChange={(e)=>formatEndDate(e.target.value)}
+          defaultValue={getCurrentDate()}
+          onChange={(e)=>setEndDate(e.target.value)}
         />
         <TextField
           id="outlined-password-input"
-          label="From"
+          label="P1"
           type="text"
-          autoComplete="From"
+          InputLabelProps={{
+            shrink: true,
+            style: { color: 'blue' }, // Change label color to blue
+          }}
+          InputProps={{
+            style: { borderColor: 'red' }, // Change border color to red
+          }}
+          autoComplete="P1"
           onChange={(e)=>setFrom(e.target.value)}
         />
          <TextField
           id="outlined-password-input"
-          label="To"
+          label="Machine Number"
           type="text"
-          autoComplete="To"
+          InputLabelProps={{
+            shrink: true,
+            style: { color: 'blue' },
+          }}
+          autoComplete="Machine Number"
           onChange={(e)=>setTo(e.target.value)}
         />
            <LoadingButton
-          size="small"
+          size="medium"
           onClick={handleClick}
        
           loading={loading}
@@ -216,34 +276,40 @@ export default function CustomizedTables() {
         
   </div>
   </Paper>
-  <Paper elevation={20}  sx={{ width: '70%', overflow: 'hidden',margin:"auto",padding:"20px" }}>
-    <TableContainer component={Paper} style={{widht:"50%",margin:"auto"}}>
-      <Table sx={{maxWidth:900,margin:"auto"}}  stickyHeader aria-label="sticky table">
+  <Paper elevation={20}  sx={{ width: '86%', overflow: 'hidden',margin:"auto",padding:"20px" }}>
+    <TableContainer component={Paper} style={{widht:"50%",height:"500px",margin:"auto"}}>
+    {data.length>0 ?
+      <Table sx={{width:"100%",margin:"auto"}}  stickyHeader aria-label="sticky table">
+     
         <TableHead>
           <TableRow>
-            <StyledTableCell>Id</StyledTableCell>
-            <StyledTableCell align="left">Machine</StyledTableCell>
-            <StyledTableCell align="left">Command</StyledTableCell>
-            <StyledTableCell align="left">P1</StyledTableCell>
-            <StyledTableCell align="left">CreatedAt</StyledTableCell>
+            <StyledTableCell align='center'>Id</StyledTableCell>
+            <StyledTableCell align="center">Machine</StyledTableCell>
+            <StyledTableCell align="center">Command</StyledTableCell>
+            <StyledTableCell align="center">P1</StyledTableCell>
+            <StyledTableCell align="center">Date</StyledTableCell>
+            <StyledTableCell align="center">Time</StyledTableCell>
         
           </TableRow>
         </TableHead>
         <TableBody>
+        
           {data.map((row,i) => (
             <StyledTableRow key={row.name}>
-              <StyledTableCell component="th" scope="row">
+              <StyledTableCell component="th" scope="row" align='center'>
                 {i+1}
               </StyledTableCell>
-              <StyledTableCell align="left">{row.machine}</StyledTableCell>
-              <StyledTableCell align="left">{row.command}</StyledTableCell>
-              <StyledTableCell align="left">{row.p1}</StyledTableCell>
-              <StyledTableCell align="left">{row.createdAt}</StyledTableCell>
+              <StyledTableCell align="center">{row.machine}</StyledTableCell>
+              <StyledTableCell align="center">{row.command}</StyledTableCell>
+              <StyledTableCell align="center">{row.p1}</StyledTableCell>
+              <StyledTableCell align="center">{convertDate(row.createdAt)}</StyledTableCell>
+              <StyledTableCell align="center">{convertTime(row.createdAt)}</StyledTableCell>
             
             </StyledTableRow>
-          ))}
+          ))} 
         </TableBody>
-      </Table>
+     
+      </Table>:<div style={{width:'100%',height:"100%",display:"flex",justifyContent:"center"}}><img style={{width:"30%",height:"50%"}} src={noData}/></div>}
     </TableContainer>
    
       </Paper>
