@@ -16,6 +16,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import { getLoadingButtonUtilityClass, loadingButtonClasses } from '@mui/lab/LoadingButton';
 import noData from "./assets/download.png"
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 import axios from 'axios';
@@ -264,7 +265,7 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
            <LoadingButton
           size="medium"
           onClick={handleClick}
-       
+          sx={{fontWeight:400}}
           loading={loading}
           loadingPosition="end"
           variant="contained"
@@ -278,7 +279,8 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
   </Paper>
   <Paper elevation={20}  sx={{ width: '86%', overflow: 'hidden',margin:"auto",padding:"20px" }}>
     <TableContainer component={Paper} style={{widht:"50%",height:"500px",margin:"auto"}}>
-    {data.length>0 ?
+      {loading ? <div style={{width:'100%',height:"100%",display:"flex",justifyContent:"center",alignItems:"center"}}><CircularProgress/></div>:
+    data.length>0 ?
       <Table sx={{width:"100%",margin:"auto"}}  stickyHeader aria-label="sticky table">
      
         <TableHead>
@@ -309,8 +311,17 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
           ))} 
         </TableBody>
      
-      </Table>:<div style={{width:'100%',height:"100%",display:"flex",justifyContent:"center"}}><img style={{width:"30%",height:"50%"}} src={noData}/></div>}
+      </Table>:<div style={{width:'100%',height:"100%",display:"flex",justifyContent:"center",alignItems:"center"}}><img style={{width:"30%",height:"50%",minWidth:"200px"}} src={noData}/></div>}
     </TableContainer>
+    <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
    
       </Paper>
     </div>
