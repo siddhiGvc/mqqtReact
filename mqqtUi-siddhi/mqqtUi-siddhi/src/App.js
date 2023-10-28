@@ -298,7 +298,7 @@ const handleChangeRowsPerPage = (event) => {
   <div style={{width:'100%',paddingTop:"5px",margin:"auto",paddingBottom:"290px"}} class="BackgroundHeader">
     <p style={{textAlign:"center",color:"white",fontSize:"45px"}}>MQTT Details</p>
     <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",maxHeight:"500px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px",borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}}>
-  <div style={{width:"90%",marginTop:"50px",marginBottom:"30px",maxHeight:"300px", overflowX:'auto',whiteSpace:'nowrap',paddingTop:"10px"}}>
+  <div style={{width:"90%",marginTop:"50px",marginBottom:"30px",maxHeight:"300px", overflowX:'auto',whiteSpace:'nowrap',paddingTop:"5px"}}>
   <FormControl style={{display:'flex',flexDirection:'row',justifyContent:"space-between"}} >
     
   <TextField
