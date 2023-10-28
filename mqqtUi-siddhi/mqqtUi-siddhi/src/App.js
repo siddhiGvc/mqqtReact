@@ -10,6 +10,16 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import TablePagination from '@mui/material/TablePagination';
+import TableFooter from '@mui/material/TableFooter';
+import IconButton from '@mui/material/IconButton';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import PropTypes from 'prop-types';
+import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -21,6 +31,80 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import axios from 'axios';
 import { useState } from 'react';
+
+
+function TablePaginationActions(props) {
+  const theme = useTheme();
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (event) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (event) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (event) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (event) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box sx={{ flexShrink: 0, ml: 2.5 }}>
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+        sx={{
+          color:'blue'
+        }}
+      >
+        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+        sx={{
+          color:'blue'
+        }}
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+        sx={{
+          color:'blue'
+        }}
+      >
+        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+        sx={{
+          color:'blue'
+        }}
+      >
+        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,17 +128,13 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+const styles = {
+  pagination: {
+   
+    color:"blue",
+  },
+};
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 export default function CustomizedTables() {
   const [data,setData]=useState([])
@@ -110,17 +190,21 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
   }
   
 
+  const emptyRows =
+  page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+const handleChangePage = (event, newPage) => {
+  setPage(newPage);
+};
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+const handleChangeRowsPerPage = (event) => {
+  setRowsPerPage(parseInt(event.target.value, 10));
+  setPage(0);
+};
+
 
   React.useEffect(()=>{
+   
     fetch(`http://localhost:8080/transactions?start_date=${startDate}&end_date=${endDate}`)
     .then((res)=>{
       return res.json();
@@ -129,6 +213,7 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
       console.log(json);
       setData(json);
       setLoading(false);
+      setPage(0);
       
     })
 
@@ -145,12 +230,13 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
       console.log(json);
       setData(json);
       setLoading(false);
+      setPage(0);
       
     })
   }
   else if(from && to)
   {
-    fetch(`http://localhost:8080/transactions/serial?start_date=${startDate}&end_date=${endDate}&from=${from}&to=${to}`)
+    fetch(`http://localhost:8080/transactions/serial?start_date=${startDate}&end_date=${endDate}&from=${from}&to=${to}&page=${page}&limit=${rowsPerPage}`)
     .then((res)=>{
       return res.json();
     })
@@ -158,6 +244,7 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
       console.log(json);
       setData(json);
       setLoading(false);
+      setPage(0);
       
       
     })
@@ -169,7 +256,7 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
   }
   else if(from)
   {
-    fetch(`http://localhost:8080/transactions/from?start_date=${startDate}&end_date=${endDate}&from=${from}`)
+    fetch(`http://localhost:8080/transactions/from?start_date=${startDate}&end_date=${endDate}&from=${from}&page=${page}&limit=${rowsPerPage}`)
     .then((res)=>{
       return res.json();
     })
@@ -177,13 +264,14 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
       console.log(json);
       setData(json);
       setLoading(false);
+      setPage(0);
       
     })
  
   }
   else if(to)
   {
-    fetch(`http://localhost:8080/transactions/machine?start_date=${startDate}&end_date=${endDate}&to=${to}`)
+    fetch(`http://localhost:8080/transactions/machine?start_date=${startDate}&end_date=${endDate}&to=${to}&page=${page}&limit=${rowsPerPage}`)
     .then((res)=>{
       return res.json();
     })
@@ -191,6 +279,7 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
       console.log(json);
       setData(json);
       setLoading(false);
+      setPage(0);
       
     })
  
@@ -208,9 +297,9 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
   return <>
   <div style={{width:'100%',paddingTop:"5px",margin:"auto",paddingBottom:"290px"}} class="BackgroundHeader">
     <p style={{textAlign:"center",color:"white",fontSize:"45px"}}>MQTT Details</p>
-    <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px",borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}}>
-  <div style={{width:"90%",marginTop:"50px",marginBottom:"30px"}}>
-  <FormControl style={{display:'flex',flexDirection:"row",justifyContent:"space-between"}} >
+    <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",maxHeight:"500px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px",borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}}>
+  <div style={{width:"90%",marginTop:"50px",marginBottom:"30px",maxHeight:"300px", overflowX:'auto',whiteSpace:'nowrap',paddingTop:"10px"}}>
+  <FormControl style={{display:'flex',flexDirection:'row',justifyContent:"space-between"}} >
     
   <TextField
           type='date'
@@ -221,8 +310,11 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
             shrink: true,
             style: { color: 'blue' },
           }}
+          style={{
+            minWidth:"100px"
+          }}
           defaultValue={getPreviousDate()}
-          style={{color:"blue"}}
+         
           onChange={(e)=>setStartDate(e.target.value)}
         />
         <TextField
@@ -234,6 +326,9 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
             shrink: true,
             style: { color: 'blue' },
           }}
+          style={{
+            minWidth:"100px"
+          }}
           defaultValue={getCurrentDate()}
           onChange={(e)=>setEndDate(e.target.value)}
         />
@@ -241,6 +336,9 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
           id="outlined-password-input"
           label="P1"
           type="text"
+          style={{
+            minWidth:"100px"
+          }}
           InputLabelProps={{
             shrink: true,
             style: { color: 'blue' }, // Change label color to blue
@@ -258,6 +356,9 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
           InputLabelProps={{
             shrink: true,
             style: { color: 'blue' },
+          }}
+          style={{
+            minWidth:"100px"
           }}
           autoComplete="Machine Number"
           onChange={(e)=>setTo(e.target.value)}
@@ -296,10 +397,13 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
         </TableHead>
         <TableBody>
         
-          {data.map((row,i) => (
+          {(rowsPerPage > 0
+            ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : data
+          ).map((row,i) => (
             <StyledTableRow key={row.name}>
               <StyledTableCell component="th" scope="row" align='center'>
-                {i+1}
+                {page*rowsPerPage+i+1}
               </StyledTableCell>
               <StyledTableCell align="center">{row.machine}</StyledTableCell>
               <StyledTableCell align="center">{row.command}</StyledTableCell>
@@ -309,19 +413,33 @@ const seconds = String(isoDate.getUTCSeconds()).padStart(2, '0');
             
             </StyledTableRow>
           ))} 
+            {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
         </TableBody>
-     
-      </Table>:<div style={{width:'100%',height:"100%",display:"flex",justifyContent:"center",alignItems:"center"}}><img style={{width:"30%",height:"50%",minWidth:"200px"}} src={noData}/></div>}
+     </Table>:<div style={{width:'100%',height:"100%",display:"flex",justifyContent:"center",alignItems:"center"}}><img style={{width:"30%",height:"50%",minWidth:"200px"}} src={noData}/></div>}
     </TableContainer>
     <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+               style={styles.pagination}
+              rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+            
+              count={data.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                label:"Show",
+                inputProps: {
+                  'aria-label': 'Show',
+                },
+                native: false,
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+             
    
       </Paper>
     </div>
