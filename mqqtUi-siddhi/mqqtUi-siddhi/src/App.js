@@ -19,7 +19,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-
+import $ from 'jquery';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -27,10 +27,12 @@ import SendIcon from '@mui/icons-material/Send';
 import { getLoadingButtonUtilityClass, loadingButtonClasses } from '@mui/lab/LoadingButton';
 import noData from "./assets/download.png"
 import CircularProgress from '@mui/material/CircularProgress';
-
-
+import { Link, Navigate } from 'react-router-dom';
+import {FiLogOut} from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
+import {API} from "./API/secrect"
 
 
 function TablePaginationActions(props) {
@@ -137,6 +139,7 @@ const styles = {
 
 
 export default function CustomizedTables() {
+  const navigate=useNavigate();
   const [data,setData]=useState([])
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -210,12 +213,41 @@ const handleChangeRowsPerPage = (event) => {
       return res.json();
     })
     .then((json)=>{
-      console.log(json);
+      // console.log(json);
       setData(json);
       setLoading(false);
       setPage(0);
       
     })
+
+
+    // const apiUrl = `${API}/transactions?start_date=${startDate}&end_date=${endDate}`; // Replace with your API URL
+    // const url = `${apiUrl}/me`;
+
+    // // Set up the headers
+    // $.ajaxSetup({
+    //   headers: {
+    //     'x-token':sessionStorage.getItem('token'),
+    //   },
+    // });
+
+    // // Make the AJAX request
+    // $.ajax({
+    //   url,
+    //   type: 'GET',
+    //   success: (json) => {
+    //     setData(json);
+    //     setLoading(false);
+    //     setPage(0);
+          
+        
+    //   },
+    //   error: (_) => {
+    //     // console.log("Error")
+    //     // Handle an error here (e.g., redirect to the login page)
+    //     navigate('/login')
+    //   },
+    // });
 
   },[])
 
@@ -227,12 +259,42 @@ const handleChangeRowsPerPage = (event) => {
       return res.json();
     })
     .then((json)=>{
-      console.log(json);
+      // console.log(json);
       setData(json);
       setLoading(false);
       setPage(0);
       
     })
+     
+    // const apiUrl = `${API}/transactions?start_date=${startDate}&end_date=${endDate}`; // Replace with your API URL
+    // const url = `${apiUrl}/me`;
+
+    // // Set up the headers
+    // $.ajaxSetup({
+    //   headers: {
+    //     'x-token':sessionStorage.getItem('token'),
+    //   },
+    // });
+
+    // // Make the AJAX request
+    // $.ajax({
+    //   url,
+    //   type: 'GET',
+    //   success: (json) => {
+    //     setData(json);
+    //     setLoading(false);
+    //     setPage(0);
+          
+        
+    //   },
+    //   error: (_) => {
+    //     // console.log("Error")
+    //     // Handle an error here (e.g., redirect to the login page)
+    //     navigate('/login')
+    //   },
+    // });
+
+
   }
   else if(from && to)
   {
@@ -241,7 +303,7 @@ const handleChangeRowsPerPage = (event) => {
       return res.json();
     })
     .then((json)=>{
-      console.log(json);
+      // console.log(json);
       setData(json);
       setLoading(false);
       setPage(0);
@@ -252,6 +314,35 @@ const handleChangeRowsPerPage = (event) => {
       setData([]);
 
     })
+
+    // const apiUrl = `${API}/transactions/serial?start_date=${startDate}&end_date=${endDate}&from=${from}&to=${to}&page=${page}&limit=${rowsPerPage}`; // Replace with your API URL
+    // const url = `${apiUrl}/me`;
+
+    // // Set up the headers
+    // $.ajaxSetup({
+    //   headers: {
+    //     'x-token':sessionStorage.getItem('token'),
+    //   },
+    // });
+
+    // // Make the AJAX request
+    // $.ajax({
+    //   url,
+    //   type: 'GET',
+    //   success: (json) => {
+    //     setData(json);
+    //     setLoading(false);
+    //     setPage(0);
+          
+        
+    //   },
+    //   error: (_) => {
+    //     // console.log("Error")
+    //     // Handle an error here (e.g., redirect to the login page)
+    //     navigate('/login')
+    //   },
+    // });
+
  
   }
   else if(from)
@@ -261,12 +352,41 @@ const handleChangeRowsPerPage = (event) => {
       return res.json();
     })
     .then((json)=>{
-      console.log(json);
+      // console.log(json);
       setData(json);
       setLoading(false);
       setPage(0);
       
     })
+
+    // const apiUrl = `${API}/transactions/from?start_date=${startDate}&end_date=${endDate}&from=${from}&page=${page}&limit=${rowsPerPage}`; // Replace with your API URL
+    // const url = `${apiUrl}/me`;
+
+    // // Set up the headers
+    // $.ajaxSetup({
+    //   headers: {
+    //     'x-token':sessionStorage.getItem('token'),
+    //   },
+    // });
+
+    // // Make the AJAX request
+    // $.ajax({
+    //   url,
+    //   type: 'GET',
+    //   success: (json) => {
+    //     setData(json);
+    //     setLoading(false);
+    //     setPage(0);
+          
+        
+    //   },
+    //   error: (_) => {
+    //     // console.log("Error")
+    //     // Handle an error here (e.g., redirect to the login page)
+    //     navigate('/login')
+    //   },
+    // });
+
  
   }
   else if(to)
@@ -276,18 +396,51 @@ const handleChangeRowsPerPage = (event) => {
       return res.json();
     })
     .then((json)=>{
-      console.log(json);
+      // console.log(json);
       setData(json);
       setLoading(false);
       setPage(0);
       
     })
+
+    // const apiUrl = `${API}/transactions/machine?start_date=${startDate}&end_date=${endDate}&to=${to}&page=${page}&limit=${rowsPerPage}`; // Replace with your API URL
+    // const url = `${apiUrl}/me`;
+
+    // // Set up the headers
+    // $.ajaxSetup({
+    //   headers: {
+    //     'x-token':sessionStorage.getItem('token'),
+    //   },
+    // });
+
+    // // Make the AJAX request
+    // $.ajax({
+    //   url,
+    //   type: 'GET',
+    //   success: (json) => {
+    //     setData(json);
+    //     setLoading(false);
+    //     setPage(0);
+          
+        
+    //   },
+    //   error: (_) => {
+    //     // console.log("Error")
+    //     // Handle an error here (e.g., redirect to the login page)
+    //     navigate('/login')
+    //   },
+    // });
+
  
   }
 
    }
 
-       
+       const Logout=()=>{
+          sessionStorage.removeItem('token');
+          navigate('/login');
+           
+       }
       
 
    
@@ -296,6 +449,9 @@ const handleChangeRowsPerPage = (event) => {
 
   return <>
   <div style={{width:'100%',paddingTop:"5px",margin:"auto",paddingBottom:"290px"}} class="BackgroundHeader">
+          <div style={{width:'95%',margin:"auto",height:"40px",display:'flex',justifyContent:"flex-end",alignItems:"center",fontSize:"30px",paddingTop:"20px",color:"#fff",cursor:"pointer"}} >
+            <FiLogOut onClick={Logout}/>
+          </div>
     <p style={{textAlign:"center",color:"white",fontSize:"45px"}}>MQTT Details</p>
     <Paper elevation={20} sx={{width:"90%",margin:"auto",height:"100px",maxHeight:"500px",display:"flex",alignItems:"center",justifyContent:"center",marginTop:"20px",marginBottom:"20px",borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}}>
   <div style={{width:"90%",marginTop:"50px",marginBottom:"30px",maxHeight:"300px", overflowX:'auto',whiteSpace:'nowrap',paddingTop:"5px"}}>
